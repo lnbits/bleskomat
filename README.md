@@ -1,4 +1,5 @@
-# Bleskomat Extension for lnbits
+# Bleskomat - <small>[LNbits](https://github.com/lnbits/lnbits) extension</small>
+<small>For more about LNBits extension check [this tutorial](https://github.com/lnbits/lnbits/wiki/LNbits-Extensions)</small>
 
 This extension allows you to connect a Bleskomat ATM to an lnbits wallet. It will work with both the [open-source DIY Bleskomat ATM project](https://github.com/samotari/bleskomat) as well as the [commercial Bleskomat ATM](https://www.bleskomat.com/).
 
