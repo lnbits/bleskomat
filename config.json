@@ -2,5 +2,6 @@
     "name": "Bleskomat",
     "short_description": "Connect a Bleskomat ATM to an lnbits",
     "tile": "/bleskomat/static/image/bleskomat.png",
-    "contributors": ["chill117"]
+    "contributors": ["chill117"],
+    "min_lnbits_version": "0.XX.0"
 }
