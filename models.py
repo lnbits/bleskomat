@@ -7,7 +7,7 @@ from loguru import logger
 from pydantic import BaseModel, validator
 
 from lnbits import bolt11
-from lnbits.core.services import PaymentFailure, pay_invoice
+from lnbits.core.services import PaymentError, pay_invoice
 
 from . import db
 from .exchange_rates import exchange_rate_providers, fiat_currencies
@@ -122,7 +122,7 @@ class BleskomatLnurl(BaseModel):
                     await pay_invoice(
                         wallet_id=self.wallet, payment_request=query["pr"]
                     )
-                except (ValueError, PermissionError, PaymentFailure) as e:
+                except (ValueError, PermissionError, PaymentError) as e:
                     raise LnurlValidationError("Failed to pay invoice: " + str(e))
                 except Exception as e:
                     logger.error(str(e))
