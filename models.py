@@ -20,19 +20,19 @@ class CreateBleskomat(BaseModel):
     fee: str = Query(...)
 
     @validator("fiat_currency")
-    def allowed_fiat_currencies(self, v):
+    def allowed_fiat_currencies(cls, v):
         if v not in fiat_currencies.keys():
             raise ValueError("Not allowed currency")
         return v
 
     @validator("exchange_rate_provider")
-    def allowed_providers(self, v):
+    def allowed_providers(cls, v):
         if v not in exchange_rate_providers.keys():
             raise ValueError("Not allowed provider")
         return v
 
     @validator("fee")
-    def fee_type(self, v):
+    def fee_type(cls, v):
         if not isinstance(v, (str, float, int)):
             raise ValueError("Fee type not allowed")
         return v
