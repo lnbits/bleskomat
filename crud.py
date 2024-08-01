@@ -3,7 +3,7 @@ import time
 from typing import List, Optional, Union
 from uuid import uuid4
 
-from . import db
+from .db import db
 from .helpers import generate_bleskomat_lnurl_hash
 from .models import Bleskomat, BleskomatLnurl, CreateBleskomat
 
@@ -15,7 +15,11 @@ async def create_bleskomat(data: CreateBleskomat, wallet_id: str) -> Bleskomat:
     api_key_encoding = "hex"
     await db.execute(
         """
-        INSERT INTO bleskomat.bleskomats (id, wallet, api_key_id, api_key_secret, api_key_encoding, name, fiat_currency, exchange_rate_provider, fee)
+        INSERT INTO bleskomat.bleskomats
+        (
+            id, wallet, api_key_id, api_key_secret, api_key_encoding,
+            name, fiat_currency, exchange_rate_provider, fee
+        )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
@@ -79,18 +83,21 @@ async def create_bleskomat_lnurl(
     *, bleskomat: Bleskomat, secret: str, tag: str, params: str, uses: int = 1
 ) -> BleskomatLnurl:
     bleskomat_lnurl_id = uuid4().hex
-    hash = generate_bleskomat_lnurl_hash(secret)
+    lnurl_hash = generate_bleskomat_lnurl_hash(secret)
     now = int(time.time())
     await db.execute(
         """
-        INSERT INTO bleskomat.bleskomat_lnurls (id, bleskomat, wallet, hash, tag, params, api_key_id, initial_uses, remaining_uses, created_time, updated_time)
+        INSERT INTO bleskomat.bleskomat_lnurls (
+            id, bleskomat, wallet, hash, tag, params, api_key_id,
+            initial_uses, remaining_uses, created_time, updated_time
+        )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             bleskomat_lnurl_id,
             bleskomat.id,
             bleskomat.wallet,
-            hash,
+            lnurl_hash,
             tag,
             params,
             bleskomat.api_key_id,
@@ -106,8 +113,8 @@ async def create_bleskomat_lnurl(
 
 
 async def get_bleskomat_lnurl(secret: str) -> Optional[BleskomatLnurl]:
-    hash = generate_bleskomat_lnurl_hash(secret)
+    lnurl_hash = generate_bleskomat_lnurl_hash(secret)
     row = await db.fetchone(
-        "SELECT * FROM bleskomat.bleskomat_lnurls WHERE hash = ?", (hash,)
+        "SELECT * FROM bleskomat.bleskomat_lnurls WHERE hash = ?", (lnurl_hash,)
     )
     return BleskomatLnurl(**row) if row else None

@@ -1,15 +1,15 @@
 import secrets
+from test.helpers import credit_wallet, is_regtest
 
 import pytest
-
 from lnbits.core.crud import get_wallet
-from lnbits.extensions.bleskomat.crud import get_bleskomat_lnurl
-from lnbits.extensions.bleskomat.helpers import (
+from lnbits.settings import get_wallet_class, settings
+
+from ..crud import get_bleskomat_lnurl
+from ..helpers import (
     generate_bleskomat_lnurl_signature,
     query_to_signing_payload,
 )
-from lnbits.settings import get_wallet_class, settings
-from tests.helpers import credit_wallet, is_regtest
 
 WALLET = get_wallet_class()
 
@@ -99,7 +99,11 @@ async def test_bleskomat_lnurl_api_valid_signature(client, bleskomat):
 async def test_bleskomat_lnurl_api_action_insufficient_balance(client, lnurl):
     bleskomat = lnurl["bleskomat"]
     secret = lnurl["secret"]
-    pr = "lntb500n1pseq44upp5xqd38rgad72lnlh4gl339njlrsl3ykep82j6gj4g02dkule7k54qdqqcqzpgxqyz5vqsp5h0zgewuxdxcl2rnlumh6g520t4fr05rgudakpxm789xgjekha75s9qyyssq5vhwsy9knhfeqg0wn6hcnppwmum8fs3g3jxkgw45havgfl6evchjsz3s8e8kr6eyacz02szdhs7v5lg0m7wehd5rpf6yg8480cddjlqpae52xu"
+    pr = """
+    lntb500n1pseq44upp5xqd38rgad72lnlh4gl339njlrsl3ykep82j6gj4g02dkule7k54qdqqcqzpgxqyz5vqsp5h
+    0zgewuxdxcl2rnlumh6g520t4fr05rgudakpxm789xgjekha75s9qyyssq5vhwsy9knhfeqg0wn6hcnppwmum8fs3g
+    3jxkgw45havgfl6evchjsz3s8e8kr6eyacz02szdhs7v5lg0m7wehd5rpf6yg8480cddjlqpae52xu
+    """
     WALLET.pay_invoice.reset_mock()
     response = await client.get(f"/bleskomat/u?k1={secret}&pr={pr}")
     assert response.status_code == 200
@@ -121,7 +125,11 @@ async def test_bleskomat_lnurl_api_action_insufficient_balance(client, lnurl):
 async def test_bleskomat_lnurl_api_action_success(client, lnurl):
     bleskomat = lnurl["bleskomat"]
     secret = lnurl["secret"]
-    pr = "lntb500n1pseq44upp5xqd38rgad72lnlh4gl339njlrsl3ykep82j6gj4g02dkule7k54qdqqcqzpgxqyz5vqsp5h0zgewuxdxcl2rnlumh6g520t4fr05rgudakpxm789xgjekha75s9qyyssq5vhwsy9knhfeqg0wn6hcnppwmum8fs3g3jxkgw45havgfl6evchjsz3s8e8kr6eyacz02szdhs7v5lg0m7wehd5rpf6yg8480cddjlqpae52xu"
+    pr = """
+    lntb500n1pseq44upp5xqd38rgad72lnlh4gl339njlrsl3ykep82j6gj4g02dkule7k54qdqqcqzpgxqyz5
+    vqsp5h0zgewuxdxcl2rnlumh6g520t4fr05rgudakpxm789xgjekha75s9qyyssq5vhwsy9knhfeqg0wn6hc
+    nppwmum8fs3g3jxkgw45havgfl6evchjsz3s8e8kr6eyacz02szdhs7v5lg0m7wehd5rpf6yg8480cddjlqpae52xu
+    """
     await credit_wallet(
         wallet_id=bleskomat.wallet,
         amount=100000,

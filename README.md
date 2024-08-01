@@ -1,21 +1,20 @@
 # Bleskomat - <small>[LNbits](https://github.com/lnbits/lnbits) extension</small>
+
 <small>For more about LNBits extension check [this tutorial](https://github.com/lnbits/lnbits/wiki/LNbits-Extensions)</small>
 
 This extension allows you to connect a Bleskomat ATM to an lnbits wallet. It will work with both the [open-source DIY Bleskomat ATM project](https://github.com/samotari/bleskomat) as well as the [commercial Bleskomat ATM](https://www.bleskomat.com/).
 
-
 ## Connect Your Bleskomat ATM
 
-* Click the "Add Bleskomat" button on this page to begin.
-* Choose a wallet. This will be the wallet that is used to pay satoshis to your ATM customers.
-* Choose the fiat currency. This should match the fiat currency that your ATM accepts.
-* Pick an exchange rate provider. This is the API that will be used to query the fiat to satoshi exchange rate at the time your customer attempts to withdraw their funds.
-* Set your ATM's fee percentage.
-* Click the "Done" button.
-* Find the new Bleskomat in the list and then click the export icon to download a new configuration file for your ATM.
-* Copy the configuration file ("bleskomat.conf") to your ATM's SD card.
-* Restart Your Bleskomat ATM. It should automatically reload the configurations from the SD card.
-
+- Click the "Add Bleskomat" button on this page to begin.
+- Choose a wallet. This will be the wallet that is used to pay satoshis to your ATM customers.
+- Choose the fiat currency. This should match the fiat currency that your ATM accepts.
+- Pick an exchange rate provider. This is the API that will be used to query the fiat to satoshi exchange rate at the time your customer attempts to withdraw their funds.
+- Set your ATM's fee percentage.
+- Click the "Done" button.
+- Find the new Bleskomat in the list and then click the export icon to download a new configuration file for your ATM.
+- Copy the configuration file ("bleskomat.conf") to your ATM's SD card.
+- Restart Your Bleskomat ATM. It should automatically reload the configurations from the SD card.
 
 ## How Does It Work?
 

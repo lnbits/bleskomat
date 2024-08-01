@@ -9,7 +9,6 @@ fiat_currencies = json.load(
         os.path.join(
             os.path.dirname(os.path.realpath(__file__)), "fiat_currencies.json"
         ),
-        "r",
     )
 )
 

@@ -1,13 +1,12 @@
 from http import HTTPStatus
 
-from fastapi import Depends, Query
+from fastapi import APIRouter, Depends, Query
+from lnbits.core.crud import get_user
+from lnbits.core.models import WalletTypeInfo
+from lnbits.decorators import require_admin_key
 from loguru import logger
 from starlette.exceptions import HTTPException
 
-from lnbits.core.crud import get_user
-from lnbits.decorators import WalletTypeInfo, require_admin_key
-
-from . import bleskomat_ext
 from .crud import (
     create_bleskomat,
     delete_bleskomat,
@@ -18,8 +17,10 @@ from .crud import (
 from .exchange_rates import fetch_fiat_exchange_rate
 from .models import CreateBleskomat
 
+bleskomat_api_router = APIRouter()
 
-@bleskomat_ext.get("/api/v1/bleskomats")
+
+@bleskomat_api_router.get("/api/v1/bleskomats")
 async def api_bleskomats(
     wallet: WalletTypeInfo = Depends(require_admin_key),
     all_wallets: bool = Query(False),
@@ -33,7 +34,7 @@ async def api_bleskomats(
     return [bleskomat.dict() for bleskomat in await get_bleskomats(wallet_ids)]
 
 
-@bleskomat_ext.get("/api/v1/bleskomat/{bleskomat_id}")
+@bleskomat_api_router.get("/api/v1/bleskomat/{bleskomat_id}")
 async def api_bleskomat_retrieve(
     bleskomat_id, wallet: WalletTypeInfo = Depends(require_admin_key)
 ):
@@ -48,8 +49,8 @@ async def api_bleskomat_retrieve(
     return bleskomat.dict()
 
 
-@bleskomat_ext.post("/api/v1/bleskomat")
-@bleskomat_ext.put("/api/v1/bleskomat/{bleskomat_id}")
+@bleskomat_api_router.post("/api/v1/bleskomat")
+@bleskomat_api_router.put("/api/v1/bleskomat/{bleskomat_id}")
 async def api_bleskomat_create_or_update(
     data: CreateBleskomat,
     wallet: WalletTypeInfo = Depends(require_admin_key),
@@ -61,12 +62,15 @@ async def api_bleskomat_create_or_update(
         await fetch_fiat_exchange_rate(
             currency=fiat_currency, provider=exchange_rate_provider
         )
-    except Exception as e:
-        logger.error(e)
+    except Exception as exc:
+        logger.error(exc)
         raise HTTPException(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-            detail=f'Failed to fetch BTC/{fiat_currency} currency pair from "{exchange_rate_provider}"',
-        )
+            detail=f"""
+            Failed to fetch BTC/{fiat_currency} currency pair
+            from `{exchange_rate_provider}`
+            """,
+        ) from exc
 
     if bleskomat_id:
         bleskomat = await get_bleskomat(bleskomat_id)
@@ -84,7 +88,7 @@ async def api_bleskomat_create_or_update(
     return bleskomat.dict()
 
 
-@bleskomat_ext.delete("/api/v1/bleskomat/{bleskomat_id}")
+@bleskomat_api_router.delete("/api/v1/bleskomat/{bleskomat_id}")
 async def api_bleskomat_delete(
     bleskomat_id, wallet: WalletTypeInfo = Depends(require_admin_key)
 ):

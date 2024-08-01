@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
-from lnbits.db import Database
-from lnbits.helpers import template_renderer
-
-db = Database("ext_bleskomat")
+from .db import db
+from .views import bleskomat_generic_router
+from .views_api import bleskomat_api_router
+from .views_lnurl import bleskomat_lnurl_router
 
 bleskomat_static_files = [
     {
@@ -13,12 +13,8 @@ bleskomat_static_files = [
 ]
 
 bleskomat_ext: APIRouter = APIRouter(prefix="/bleskomat", tags=["Bleskomat"])
+bleskomat_ext.include_router(bleskomat_generic_router)
+bleskomat_ext.include_router(bleskomat_api_router)
+bleskomat_ext.include_router(bleskomat_lnurl_router)
 
-
-def bleskomat_renderer():
-    return template_renderer(["bleskomat/templates"])
-
-
-from .lnurl_api import *  # noqa: F401,F403
-from .views import *  # noqa: F401,F403
-from .views_api import *  # noqa: F401,F403
+__all__ = ["bleskomat_ext", "bleskomat_static_files", "db"]
