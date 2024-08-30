@@ -2,17 +2,17 @@ import json
 import secrets
 
 import pytest_asyncio
-
 from lnbits.core.crud import create_account, create_wallet
-from lnbits.extensions.bleskomat.crud import create_bleskomat, create_bleskomat_lnurl
-from lnbits.extensions.bleskomat.exchange_rates import exchange_rate_providers
-from lnbits.extensions.bleskomat.helpers import (
+
+from ..crud import create_bleskomat, create_bleskomat_lnurl
+from ..exchange_rates import exchange_rate_providers
+from ..helpers import (
     generate_bleskomat_lnurl_secret,
     generate_bleskomat_lnurl_signature,
     prepare_lnurl_params,
     query_to_signing_payload,
 )
-from lnbits.extensions.bleskomat.models import CreateBleskomat
+from ..models import CreateBleskomat
 
 exchange_rate_providers["dummy"] = {
     "name": "dummy",
@@ -41,7 +41,6 @@ async def lnurl(bleskomat):
     query = {
         "tag": "withdrawRequest",
         "nonce": secrets.token_hex(10),
-        "tag": "withdrawRequest",
         "minWithdrawable": "50000",
         "maxWithdrawable": "50000",
         "defaultDescription": "test valid sig",

@@ -2,14 +2,13 @@ import json
 import time
 from typing import Dict
 
+import bolt11
 from fastapi import Query, Request
+from lnbits.core.services import PaymentError, pay_invoice
 from loguru import logger
 from pydantic import BaseModel, validator
 
-from lnbits import bolt11
-from lnbits.core.services import PaymentError, pay_invoice
-
-from . import db
+from .db import db
 from .exchange_rates import exchange_rate_providers, fiat_currencies
 from .helpers import LnurlValidationError, get_callback_url
 
@@ -93,13 +92,14 @@ class BleskomatLnurl(BaseModel):
                 raise LnurlValidationError("Multiple payment requests not supported")
             try:
                 invoice = bolt11.decode(pr)
-            except ValueError:
+            except ValueError as exc:
                 raise LnurlValidationError(
                     'Invalid parameter ("pr"): Lightning payment request expected'
-                )
+                ) from exc
             if invoice.amount_msat < params["minWithdrawable"]:
                 raise LnurlValidationError(
-                    'Amount in invoice must be greater than or equal to "minWithdrawable"'
+                    "Amount in invoice must be greater "
+                    'than or equal to "minWithdrawable"'
                 )
             if invoice.amount_msat > params["maxWithdrawable"]:
                 raise LnurlValidationError(
@@ -122,11 +122,13 @@ class BleskomatLnurl(BaseModel):
                     await pay_invoice(
                         wallet_id=self.wallet, payment_request=query["pr"]
                     )
-                except (ValueError, PermissionError, PaymentError) as e:
-                    raise LnurlValidationError("Failed to pay invoice: " + str(e))
-                except Exception as e:
-                    logger.error(str(e))
-                    raise LnurlValidationError("Unexpected error")
+                except (ValueError, PermissionError, PaymentError) as exc:
+                    raise LnurlValidationError(
+                        "Failed to pay invoice: " + str(exc)
+                    ) from exc
+                except Exception as exc:
+                    logger.error(str(exc))
+                    raise LnurlValidationError("Unexpected error") from exc
 
     async def use(self, conn) -> bool:
         now = int(time.time())
