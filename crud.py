@@ -68,8 +68,7 @@ async def get_bleskomats(wallet_ids: Union[str, List[str]]) -> List[Bleskomat]:
 
 async def update_bleskomat(bleskomat_id: str, data: CreateBleskomat) -> Bleskomat:
     await db.execute(
-        update_query("bleskomat.bleskomats", data),
-        {"id": bleskomat_id, **data.dict()}
+        update_query("bleskomat.bleskomats", data), {"id": bleskomat_id, **data.dict()}
     )
     row = await db.fetchone(
         "SELECT * FROM bleskomat.bleskomats WHERE id = :id", {"id": bleskomat_id}
