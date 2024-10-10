@@ -1,7 +1,3 @@
-/* global Vue, VueQrcode, _, Quasar, LOCALE, windowMixin, LNbits */
-
-Vue.component(VueQrcode.name, VueQrcode)
-
 var mapBleskomat = function (obj) {
   obj._data = _.clone(obj)
   return obj
@@ -14,9 +10,9 @@ var defaultValues = {
   fee: '0.00'
 }
 
-new Vue({
+window.app = Vue.createApp({
   el: '#vue',
-  mixins: [windowMixin],
+  mixins: [window.windowMixin],
   data: function () {
     return {
       checker: null,

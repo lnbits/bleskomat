@@ -4,7 +4,8 @@ from typing import Dict
 
 import bolt11
 from fastapi import Query, Request
-from lnbits.core.services import PaymentError, pay_invoice
+from lnbits.core.services import pay_invoice
+from lnbits.exceptions import PaymentError
 from loguru import logger
 from pydantic import BaseModel, validator
 
