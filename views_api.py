@@ -15,7 +15,7 @@ from .crud import (
     update_bleskomat,
 )
 from .exchange_rates import fetch_fiat_exchange_rate
-from .models import CreateBleskomat
+from .models import Bleskomat, CreateBleskomat
 
 bleskomat_api_router = APIRouter()
 
@@ -24,20 +24,20 @@ bleskomat_api_router = APIRouter()
 async def api_bleskomats(
     wallet: WalletTypeInfo = Depends(require_admin_key),
     all_wallets: bool = Query(False),
-):
+) -> list[Bleskomat]:
     wallet_ids = [wallet.wallet.id]
 
     if all_wallets:
         user = await get_user(wallet.wallet.user)
         wallet_ids = user.wallet_ids if user else []
 
-    return [bleskomat.dict() for bleskomat in await get_bleskomats(wallet_ids)]
+    return await get_bleskomats(wallet_ids)
 
 
 @bleskomat_api_router.get("/api/v1/bleskomat/{bleskomat_id}")
 async def api_bleskomat_retrieve(
     bleskomat_id, wallet: WalletTypeInfo = Depends(require_admin_key)
-):
+) -> Bleskomat:
     bleskomat = await get_bleskomat(bleskomat_id)
 
     if not bleskomat or bleskomat.wallet != wallet.wallet.id:
@@ -46,7 +46,7 @@ async def api_bleskomat_retrieve(
             detail="Bleskomat configuration not found.",
         )
 
-    return bleskomat.dict()
+    return bleskomat
 
 
 @bleskomat_api_router.post("/api/v1/bleskomat")
@@ -55,7 +55,7 @@ async def api_bleskomat_create_or_update(
     data: CreateBleskomat,
     wallet: WalletTypeInfo = Depends(require_admin_key),
     bleskomat_id=None,
-):
+) -> Bleskomat:
     fiat_currency = data.fiat_currency
     exchange_rate_provider = data.exchange_rate_provider
     try:
@@ -80,18 +80,20 @@ async def api_bleskomat_create_or_update(
                 detail="Bleskomat configuration not found.",
             )
 
-        bleskomat = await update_bleskomat(bleskomat_id, data)
+        for k, v in data.dict().items():
+            setattr(bleskomat, k, v)
+        bleskomat = await update_bleskomat(bleskomat)
     else:
         bleskomat = await create_bleskomat(wallet_id=wallet.wallet.id, data=data)
 
     assert bleskomat
-    return bleskomat.dict()
+    return bleskomat
 
 
 @bleskomat_api_router.delete("/api/v1/bleskomat/{bleskomat_id}")
 async def api_bleskomat_delete(
     bleskomat_id, wallet: WalletTypeInfo = Depends(require_admin_key)
-):
+) -> None:
     bleskomat = await get_bleskomat(bleskomat_id)
 
     if not bleskomat or bleskomat.wallet != wallet.wallet.id:
@@ -101,4 +103,3 @@ async def api_bleskomat_delete(
         )
 
     await delete_bleskomat(bleskomat_id)
-    return "", HTTPStatus.NO_CONTENT
