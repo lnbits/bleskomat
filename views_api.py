@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Query
-from lnbits.core.crud import get_user
+from lnbits.core.crud import get_user_by_id
 from lnbits.core.models import WalletTypeInfo
 from lnbits.decorators import require_admin_key
 from loguru import logger
@@ -28,7 +28,7 @@ async def api_bleskomats(
     wallet_ids = [wallet.wallet.id]
 
     if all_wallets:
-        user = await get_user(wallet.wallet.user)
+        user = await get_user_by_id(wallet.wallet.user)
         wallet_ids = user.wallet_ids if user else []
 
     return await get_bleskomats(wallet_ids)
