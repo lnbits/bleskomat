@@ -114,11 +114,7 @@ window.app = Vue.createApp({
       lines.push('callbackUrl=' + window.bleskomat_vars.callback_url)
       lines.push('shorten=true')
       var content = lines.join('\n')
-      var status = Quasar.utils.exportFile(
-        'bleskomat.conf',
-        content,
-        'text/plain'
-      )
+      var status = Quasar.exportFile('bleskomat.conf', content, 'text/plain')
       if (status !== true) {
         Quasar.plugins.Notify.create({
           message: 'Browser denied file download...',
