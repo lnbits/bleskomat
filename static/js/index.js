@@ -1,7 +1,3 @@
-/* global Vue, VueQrcode, _, Quasar, LOCALE, windowMixin, LNbits */
-
-Vue.component(VueQrcode.name, VueQrcode)
-
 var mapBleskomat = function (obj) {
   obj._data = _.clone(obj)
   return obj
@@ -14,9 +10,9 @@ var defaultValues = {
   fee: '0.00'
 }
 
-new Vue({
+window.app = Vue.createApp({
   el: '#vue',
-  mixins: [windowMixin],
+  mixins: [window.windowMixin],
   data: function () {
     return {
       checker: null,
@@ -118,11 +114,7 @@ new Vue({
       lines.push('callbackUrl=' + window.bleskomat_vars.callback_url)
       lines.push('shorten=true')
       var content = lines.join('\n')
-      var status = Quasar.utils.exportFile(
-        'bleskomat.conf',
-        content,
-        'text/plain'
-      )
+      var status = Quasar.exportFile('bleskomat.conf', content, 'text/plain')
       if (status !== true) {
         Quasar.plugins.Notify.create({
           message: 'Browser denied file download...',

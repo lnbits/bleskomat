@@ -27,10 +27,10 @@
         <q-table
           dense
           flat
-          :data="sortedBleskomats"
+          :rows="sortedBleskomats"
           row-key="id"
           :columns="bleskomatsTable.columns"
-          :pagination.sync="bleskomatsTable.pagination"
+          v-model:pagination="bleskomatsTable.pagination"
         >
           {% raw %}
           <template v-slot:header="props">
