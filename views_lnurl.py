@@ -1,5 +1,6 @@
 import json
 import math
+import traceback
 from http import HTTPStatus
 
 from fastapi import APIRouter
@@ -129,6 +130,7 @@ async def api_bleskomat_lnurl(req: Request):
     except LnurlHttpError as e:
         return {"status": "ERROR", "reason": str(e)}
     except Exception as e:
+        logger.error(traceback.format_exc())
         logger.error(str(e))
         return {"status": "ERROR", "reason": "Unexpected error"}
 

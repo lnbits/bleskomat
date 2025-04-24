@@ -1,6 +1,6 @@
 import secrets
 import time
-from typing import List, Optional, Union
+from typing import Optional, Union
 from uuid import uuid4
 
 from .db import db
@@ -41,7 +41,7 @@ async def get_bleskomat_by_api_key_id(api_key_id: str) -> Optional[Bleskomat]:
     )
 
 
-async def get_bleskomats(wallet_ids: Union[str, List[str]]) -> List[Bleskomat]:
+async def get_bleskomats(wallet_ids: Union[str, list[str]]) -> list[Bleskomat]:
     if isinstance(wallet_ids, str):
         wallet_ids = [wallet_ids]
     q = ",".join([f"'{wallet_id}'" for wallet_id in wallet_ids])
