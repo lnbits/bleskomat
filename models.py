@@ -5,6 +5,7 @@ from typing import Dict
 import bolt11
 from fastapi import Query, Request
 from lnbits.core.services import pay_invoice
+from lnbits.db import Connection
 from lnbits.exceptions import PaymentError
 from loguru import logger
 from pydantic import BaseModel, validator
@@ -131,15 +132,14 @@ class BleskomatLnurl(BaseModel):
                     logger.error(str(exc))
                     raise LnurlValidationError("Unexpected error") from exc
 
-    async def use(self, conn) -> bool:
+    async def use(self, conn: Connection) -> bool:
         now = int(time.time())
         result = await conn.execute(
             """
             UPDATE bleskomat.bleskomat_lnurls
-            SET remaining_uses = remaining_uses - 1, updated_time = ?
-            WHERE id = ?
-                AND remaining_uses > 0
+            SET remaining_uses = remaining_uses - 1, updated_time = :now
+            WHERE id = :id AND remaining_uses > 0
             """,
-            (now, self.id),
+            {"now": now, "id": self.id},
         )
         return result.rowcount > 0
