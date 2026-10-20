@@ -24,5 +24,9 @@ async def index(req: Request, user: User = Depends(check_user_exists)):
     }
     return bleskomat_renderer().TemplateResponse(
         "bleskomat/index.html",
-        {"request": req, "user": user.json(), "bleskomat_vars": bleskomat_vars},
+        {
+            "request": req,
+            "user": user.model_dump_json(),
+            "bleskomat_vars": bleskomat_vars,
+        },
     )

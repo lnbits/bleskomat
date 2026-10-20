@@ -8,7 +8,7 @@ from lnbits.core.services import pay_invoice
 from lnbits.db import Connection
 from lnbits.exceptions import PaymentError
 from loguru import logger
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 from .db import db
 from .exchange_rates import exchange_rate_providers, fiat_currencies
@@ -21,23 +21,26 @@ class CreateBleskomat(BaseModel):
     exchange_rate_provider: str = Query(...)
     fee: str = Query(...)
 
-    @validator("fiat_currency")
+    @field_validator("fiat_currency")
+    @classmethod
     def allowed_fiat_currencies(cls, v):
         if v not in fiat_currencies.keys():
             raise ValueError("Not allowed currency")
         return v
 
-    @validator("exchange_rate_provider")
+    @field_validator("exchange_rate_provider")
+    @classmethod
     def allowed_providers(cls, v):
         if v not in exchange_rate_providers.keys():
             raise ValueError("Not allowed provider")
         return v
 
-    @validator("fee")
+    @field_validator("fee", mode="before")
+    @classmethod
     def fee_type(cls, v):
         if not isinstance(v, (str, float, int)):
             raise ValueError("Fee type not allowed")
-        return v
+        return str(v)
 
 
 class Bleskomat(BaseModel):

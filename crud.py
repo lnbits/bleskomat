@@ -19,7 +19,7 @@ async def create_bleskomat(data: CreateBleskomat, wallet_id: str) -> Bleskomat:
         api_key_id=api_key_id,
         api_key_secret=api_key_secret,
         api_key_encoding=api_key_encoding,
-        **data.dict(),
+        **data.model_dump(),
     )
     await db.insert("bleskomat.bleskomats", bleskomat)
     return bleskomat
