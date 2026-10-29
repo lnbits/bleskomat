@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Callable, Union
+from collections.abc import Callable
 
 import httpx
 
@@ -12,9 +12,7 @@ fiat_currencies = json.load(
     )
 )
 
-exchange_rate_providers: dict[
-    str, dict[str, Union[str, Callable[[dict, dict], str]]]
-] = {
+exchange_rate_providers: dict[str, dict[str, str | Callable[[dict, dict], str]]] = {
     "bitfinex": {
         "name": "Bitfinex",
         "domain": "bitfinex.com",

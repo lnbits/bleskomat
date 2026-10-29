@@ -1,6 +1,5 @@
 import json
 import time
-from typing import Dict
 
 import bolt11
 from fastapi import Query, Request
@@ -38,7 +37,7 @@ class CreateBleskomat(BaseModel):
     @field_validator("fee", mode="before")
     @classmethod
     def fee_type(cls, v):
-        if not isinstance(v, (str, float, int)):
+        if not isinstance(v, str | float | int):
             raise ValueError("Fee type not allowed")
         return str(v)
 
@@ -72,7 +71,7 @@ class BleskomatLnurl(BaseModel):
         # When initial uses is 0 then the LNURL has unlimited uses.
         return self.initial_uses == 0 or self.remaining_uses > 0
 
-    def get_info_response_object(self, secret: str, req: Request) -> Dict[str, str]:
+    def get_info_response_object(self, secret: str, req: Request) -> dict[str, str]:
         tag = self.tag
         params = json.loads(self.params)
         response = {"tag": tag}
