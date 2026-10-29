@@ -1,6 +1,5 @@
 import secrets
 import time
-from typing import Optional, Union
 from uuid import uuid4
 
 from .db import db
@@ -19,13 +18,13 @@ async def create_bleskomat(data: CreateBleskomat, wallet_id: str) -> Bleskomat:
         api_key_id=api_key_id,
         api_key_secret=api_key_secret,
         api_key_encoding=api_key_encoding,
-        **data.dict(),
+        **data.model_dump(),
     )
     await db.insert("bleskomat.bleskomats", bleskomat)
     return bleskomat
 
 
-async def get_bleskomat(bleskomat_id: str) -> Optional[Bleskomat]:
+async def get_bleskomat(bleskomat_id: str) -> Bleskomat | None:
     return await db.fetchone(
         "SELECT * FROM bleskomat.bleskomats WHERE id = :id",
         {"id": bleskomat_id},
@@ -33,7 +32,7 @@ async def get_bleskomat(bleskomat_id: str) -> Optional[Bleskomat]:
     )
 
 
-async def get_bleskomat_by_api_key_id(api_key_id: str) -> Optional[Bleskomat]:
+async def get_bleskomat_by_api_key_id(api_key_id: str) -> Bleskomat | None:
     return await db.fetchone(
         "SELECT * FROM bleskomat.bleskomats WHERE api_key_id = :id",
         {"id": api_key_id},
@@ -41,7 +40,7 @@ async def get_bleskomat_by_api_key_id(api_key_id: str) -> Optional[Bleskomat]:
     )
 
 
-async def get_bleskomats(wallet_ids: Union[str, list[str]]) -> list[Bleskomat]:
+async def get_bleskomats(wallet_ids: str | list[str]) -> list[Bleskomat]:
     if isinstance(wallet_ids, str):
         wallet_ids = [wallet_ids]
     q = ",".join([f"'{wallet_id}'" for wallet_id in wallet_ids])
@@ -85,7 +84,7 @@ async def create_bleskomat_lnurl(
     return bleskomat_lnurl
 
 
-async def get_bleskomat_lnurl(secret: str) -> Optional[BleskomatLnurl]:
+async def get_bleskomat_lnurl(secret: str) -> BleskomatLnurl | None:
     lnurl_hash = generate_bleskomat_lnurl_hash(secret)
     return await db.fetchone(
         "SELECT * FROM bleskomat.bleskomat_lnurls WHERE hash = :hash",

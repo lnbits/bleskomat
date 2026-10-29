@@ -80,7 +80,7 @@ async def api_bleskomat_create_or_update(
                 detail="Bleskomat configuration not found.",
             )
 
-        for k, v in data.dict().items():
+        for k, v in data.model_dump().items():
             setattr(bleskomat, k, v)
         bleskomat = await update_bleskomat(bleskomat)
     else:

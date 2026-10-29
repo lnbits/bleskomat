@@ -2,7 +2,6 @@ import base64
 import hashlib
 import hmac
 from http import HTTPStatus
-from typing import Dict
 from urllib import parse
 
 from fastapi import Request
@@ -79,7 +78,7 @@ encode_uri_component_safe_chars = (
 )
 
 
-def query_to_signing_payload(query: Dict[str, str]) -> str:
+def query_to_signing_payload(query: dict[str, str]) -> str:
     # Sort the query by key, then stringify it to create the payload.
     sorted_keys = sorted(query.keys(), key=str.lower)
     payload = []
@@ -114,7 +113,7 @@ unshorten_rules: dict[str, dict] = {
 }
 
 
-def unshorten_lnurl_query(query: dict) -> Dict[str, str]:
+def unshorten_lnurl_query(query: dict) -> dict[str, str]:
     new_query = {}
     rules = unshorten_rules
     if "tag" in query:
