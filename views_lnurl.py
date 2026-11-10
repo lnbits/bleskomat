@@ -27,7 +27,11 @@ bleskomat_lnurl_router = APIRouter()
 
 
 # Handles signed URL from Bleskomat ATMs and "action" callback of auto-generated LNURLs.
-@bleskomat_lnurl_router.get("/u", name="bleskomat.api_bleskomat_lnurl")
+@bleskomat_lnurl_router.get(
+    "/u",
+    name="bleskomat.api_bleskomat_lnurl",
+    openapi_extra={"x-lnbits-local-lnurl": True},
+)
 async def api_bleskomat_lnurl(req: Request):
     try:
         query = dict(req.query_params)
